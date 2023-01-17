@@ -1,11 +1,13 @@
-FROM node:18-alpine
+FROM node:18-alpine as build
 
 WORKDIR '/app'
 
-COPY package.json .
+COPY . .
 
-RUN npm install
+RUN npm install && npm run build
 
 COPY . .
 
-CMD ["npm", "run", "start"]
+FROM nginx:latest
+
+COPY --from=build /app/build /usr/share/nginx/html
